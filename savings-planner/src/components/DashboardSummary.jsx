@@ -1,6 +1,12 @@
 import React from 'react';
 
-const DashboardSummary = ({ goals = [], exchangeRate = 1, lastUpdated = '', onRefresh }) => {
+const DashboardSummary = ({
+  goals = [],
+  exchangeRate = 1,
+  lastUpdated = '',
+  onRefresh,
+  isLoading = false,
+}) => {
   const totalTargetInUSD = goals.reduce((sum, g) => {
     return sum + (g.currency === 'INR' ? g.target / exchangeRate : g.target);
   }, 0);
@@ -32,9 +38,11 @@ const DashboardSummary = ({ goals = [], exchangeRate = 1, lastUpdated = '', onRe
         <h2 className="text-2xl font-semibold flex items-center gap-2">🎯 Financial Overview</h2>
         <button
           onClick={onRefresh}
-          className="bg-white text-indigo-600 px-3 py-1 rounded-md font-medium hover:bg-indigo-100"
+          className={`bg-white text-indigo-600 px-3 py-1 rounded-md font-medium 
+            ${isLoading ? 'opacity-50 cursor-not-allowed' : 'hover:bg-indigo-100'}`}
+          disabled={isLoading}
         >
-          Refresh Rates
+           {isLoading ? 'Refreshing...' : 'Refresh Rates'}
         </button>
       </div>
 
