@@ -1,4 +1,4 @@
-# 💰 Syfe Savings PlannerMore actions
+# 💰 Syfe Savings Planner
 
 A modern and responsive savings goal tracker that helps you set, visualize, and track savings goals across currencies (INR/USD), with real-time exchange rate updates.
 
