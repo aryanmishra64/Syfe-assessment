@@ -7,6 +7,7 @@ import GoalCard from './components/GoalCard';
 import AddContributionModal from './components/AddContributionModal';
 import DashboardSummary from './components/DashboardSummary';
 import { fetchExchangeRate } from './services/exchangeRate';
+const [isLoading, setIsLoading] = useState(false);
 
 const App = () => {
   const [goals, setGoals] = useState([]);
@@ -27,12 +28,23 @@ const App = () => {
     Cookies.set('syfe_goals', JSON.stringify(goals), { expires: 7 });
   }, [goals]);
   const loadRate = async () => {
+    setIsLoading(true);
     try {
       const data = await fetchExchangeRate();
-      setExchangeRate(data.rate);
-      setLastUpdated(data.time);
+      setExchangeRate(prev => {
+        if (prev === data.rate) return data.rate + 0.0001;
+        return data.rate;
+      });
+
+      setLastUpdated(new Date(data.time).toLocaleString()); // format for UI
+
+      console.log("Exchange Rate:", data.rate);
+      console.log("Last Updated:", data.time);
     } catch (err) {
       alert("Failed to fetch exchange rate.");
+    }
+    finally {
+      setIsLoading(false); // end loading
     }
   };
 
@@ -50,6 +62,10 @@ const App = () => {
     );
   };
 
+  const deleteGoal = (goalId) => {
+    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+  };
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-[#f4f8ff] to-[#e0edff]">
       <div className="max-w-4xl mx-auto p-4 space-y-4">
@@ -58,7 +74,7 @@ const App = () => {
         {/* Dashboard Summary */}
          <div className="overflow-hidden w-full bg-white py-2 rounded-md shadow-inner">
           <p className="scroll-horizontal text-sm text-gray-700 px-4">
-            Exchange Rate (USD to INR): {exchangeRate} | Last updated: {lastUpdated || 'N/A'}
+            Exchange Rate (USD to INR): {exchangeRate.toFixed(2)} | Last updated: {lastUpdated || 'N/A'}
           </p>
         </div>
 
@@ -67,6 +83,8 @@ const App = () => {
           goals={goals}
           exchangeRate={exchangeRate}
           lastUpdated={lastUpdated}
+          onRefresh={loadRate}
+          isLoading={isLoading}
         />
 
         {/* Goal Creation */}
@@ -80,6 +98,7 @@ const App = () => {
               goal={goal}
               exchangeRate={exchangeRate}
               addContribution={setModalGoalId}
+              onDelete={deleteGoal}
             />
           ))}
         </div>
