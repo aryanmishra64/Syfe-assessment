@@ -1,12 +1,40 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Cookies from 'js-cookie';
+
+
 import GoalForm from './components/GoalForm';
 import GoalCard from './components/GoalCard';
 import AddContributionModal from './components/AddContributionModal';
 import DashboardSummary from './components/DashboardSummary';
+import { fetchExchangeRate } from './services/exchangeRate';
 
 const App = () => {
   const [goals, setGoals] = useState([]);
   const [modalGoalId, setModalGoalId] = useState(null);
+  const [exchangeRate, setExchangeRate] = useState(80);
+  const [lastUpdated, setLastUpdated] = useState('');
+
+  useEffect(() => {
+     const savedGoals = Cookies.get('syfe_goals');
+    if (savedGoals) {
+      setGoals(JSON.parse(savedGoals));
+    }
+    loadRate();
+  }, []);
+
+  // Save to cookie when goals change
+  useEffect(() => {
+    Cookies.set('syfe_goals', JSON.stringify(goals), { expires: 7 });
+  }, [goals]);
+  const loadRate = async () => {
+    try {
+      const data = await fetchExchangeRate();
+      setExchangeRate(data.rate);
+      setLastUpdated(data.time);
+    } catch (err) {
+      alert("Failed to fetch exchange rate.");
+    }
+  };
 
   const addGoal = (goal) => {
     setGoals(prev => [...prev, goal]);
@@ -28,28 +56,33 @@ const App = () => {
         <h1 className="text-2xl font-bold text-center">𖣠 Syfe Savings Planner</h1>
 
         {/* Dashboard Summary */}
-        <DashboardSummary goals={goals} />
+         <div className="overflow-hidden w-full bg-white py-2 rounded-md shadow-inner">
+          <p className="scroll-horizontal text-sm text-gray-700 px-4">
+            Exchange Rate (USD to INR): {exchangeRate} | Last updated: {lastUpdated || 'N/A'}
+          </p>
+        </div>
+
+        {/* ✅ Pass props here */}
+        <DashboardSummary
+          goals={goals}
+          exchangeRate={exchangeRate}
+          lastUpdated={lastUpdated}
+        />
 
         {/* Goal Creation */}
         <GoalForm addGoal={addGoal} />
 
         {/* Goal Cards */}
-        <h2 className="text-xl font-semibold mt-4">🎯 Your Goals</h2>
-        {goals.length === 0 ? (
-          <div className="text-center text-gray-500 mt-4">
-            No goals yet. Click <strong>+ Add Goal</strong> to get started.
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            {goals.map(goal => (
-              <GoalCard
-                key={goal.id}
-                goal={goal}
-                addContribution={(id) => setModalGoalId(id)}
-              />
-            ))}
-          </div>
-        )}
+         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">Add commentMore actions
+          {goals.map(goal => (
+            <GoalCard
+              key={goal.id}
+              goal={goal}
+              exchangeRate={exchangeRate}
+              addContribution={setModalGoalId}
+            />
+          ))}
+        </div>
 
         {/* Add Contribution Modal */}
         {modalGoalId && (
