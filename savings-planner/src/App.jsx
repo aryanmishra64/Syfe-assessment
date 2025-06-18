@@ -63,7 +63,8 @@ const App = () => {
   };
 
   const deleteGoal = (goalId) => {
-    setGoals(prev => prev.filter(goal => goal.id !== goalId));
+      const updatedGoals = goals.filter(goal => goal.id !== goalId);
+    setGoals(updatedGoals);
   };
 
   return (

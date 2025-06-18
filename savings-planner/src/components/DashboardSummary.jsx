@@ -33,9 +33,11 @@ const DashboardSummary = ({
     
 
   return (
-    <div className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white p-6 rounded-2xl shadow-md">
-      <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold flex items-center gap-2">🎯 Financial Overview</h2>
+     <div className="bg-gradient-to-r from-indigo-500 to-blue-500 text-white p-6 sm:p-8 rounded-2xl shadow-md w-full max-w-4xl mx-auto">Add commentMore actions
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 gap-4">
+        <h2 className="text-2xl sm:text-3xl font-semibold flex items-center gap-2">
+          🎯 Financial Overview
+        </h2>
         <button
           onClick={onRefresh}
           className={`bg-white text-indigo-600 px-3 py-1 rounded-md font-medium 
@@ -46,19 +48,19 @@ const DashboardSummary = ({
         </button>
       </div>
 
-      <div className="grid sm:grid-cols-3 gap-4 text-center">
-        <div>
-          <div className="text-sm">Total Target</div>
-          <div className="text-xl font-bold">
+       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 text-center">Add commentMore actions
+        <div className="space-y-1">
+          <div className="text-sm opacity-80">Total Target</div>
+          <div className="text-2xl font-bold">
             ₹{totalTargetInINR.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </div>
           <div className="text-xs opacity-70">
             ${totalTargetInUSD.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </div>
         </div>
-        <div>
-          <div className="text-sm">Total Saved</div>
-          <div className="text-xl font-bold">
+      <div className="space-y-1">
+          <div className="text-sm opacity-80">Total Saved</div>Add commentMore actions
+          <div className="text-2xl font-bold">
             ₹{totalSavedInINR.toLocaleString(undefined, { maximumFractionDigits: 0 })}
           </div>
           <div className="text-xs opacity-70">
@@ -72,7 +74,7 @@ const DashboardSummary = ({
         </div>
       </div>
 
-      <div className="mt-4 text-sm">
+      <div className="mt-6 text-sm text-center sm:text-right opacity-90">
         Exchange Rate: 1 USD = ₹{exchangeRate.toFixed(2)} &nbsp; | &nbsp; Last updated: {lastUpdated || 'N/A'}
       </div>
     </div>
